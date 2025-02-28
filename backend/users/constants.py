@@ -1,0 +1,7 @@
+"""Константы для приложения users."""
+
+EMAIL_MAX_LENGTH: int = 254
+USERNAME_MAX_LENGTH: int = 150
+USERNAME_PREVIEW_MAX_LENGTH: int = 50
+FIRST_NAME_MAX_LENGTH: int = 150
+LAST_NAME_MAX_LENGTH: int = 150
