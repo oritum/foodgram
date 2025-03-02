@@ -1,20 +1,7 @@
 """Утилиты для проекта foodgram_backend."""
 
 from django.conf import settings
-from drf_extra_fields.fields import Base64ImageField
 from hashids import Hashids
-
-
-class Base64ImageField(Base64ImageField):
-    """Поле для работы с изображениями в формате base64 с абсолютным URL."""
-
-    def to_representation(self, value):
-        if not value:
-            return None
-        request = self.context.get('request')
-        if request:
-            return request.build_absolute_uri(value.url)
-        return value.url
 
 
 def generate_short_link(

@@ -1,8 +1,8 @@
 """Сериализаторы для приложения users."""
 
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from core.utils import Base64ImageField
 from recipes.models import Recipe, User
 
 
