@@ -3,16 +3,28 @@
 from io import BytesIO
 
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
-from core.constants import (
+from api.constants import (
+    BOTTOM_MARGIN,
     FOODGRAM_LOGO_HEIGHT,
     FOODGRAM_LOGO_PATH,
     FOODGRAM_LOGO_WIDTH,
+    INITIAL_Y_POSITION,
+    LEFT_MARGIN,
+    LINE_END,
+    LINE_HEIGHT,
+    LINE_START,
+    LINE_Y_POSITION,
+    NEW_PAGE_Y_POSITION,
     SHOPPING_CART_FONT,
+    SHOPPING_CART_FONT_NAME,
+    START_INDEX,
+    TEXT_FONT_SIZE,
+    TITLE_FONT_SIZE,
+    TOP_MARGIN,
 )
 
 
@@ -22,29 +34,33 @@ def generate_shopping_list_pdf(
     """Генерация PDF-файла со списком покупок."""
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
-    pdfmetrics.registerFont(TTFont('DejaVu', SHOPPING_CART_FONT))
+    pdfmetrics.registerFont(
+        TTFont(SHOPPING_CART_FONT_NAME, SHOPPING_CART_FONT)
+    )
 
     pdf.drawImage(
         FOODGRAM_LOGO_PATH,
-        2 * cm,
-        27 * cm,
-        width=FOODGRAM_LOGO_WIDTH * cm,
-        height=FOODGRAM_LOGO_HEIGHT * cm,
+        LEFT_MARGIN,
+        TOP_MARGIN,
+        width=FOODGRAM_LOGO_WIDTH,
+        height=FOODGRAM_LOGO_HEIGHT,
         preserveAspectRatio=True,
     )
-    pdf.setFont('DejaVu', 16)
-    pdf.drawString(2 * cm, 27 * cm, 'Список покупок')
-    pdf.setFont('DejaVu', 12)
-    pdf.line(2 * cm, 26.8 * cm, 18 * cm, 26.8 * cm)
-    y_position = 25 * cm
-    for index, ((name, unit), amount) in enumerate(ingredients.items(), 1):
+    pdf.setFont(SHOPPING_CART_FONT_NAME, TITLE_FONT_SIZE)
+    pdf.drawString(LEFT_MARGIN, TOP_MARGIN, 'Список покупок')
+    pdf.setFont(SHOPPING_CART_FONT_NAME, TEXT_FONT_SIZE)
+    pdf.line(LINE_START, LINE_Y_POSITION, LINE_END, LINE_Y_POSITION)
+    y_position = INITIAL_Y_POSITION
+    for index, ((name, unit), amount) in enumerate(
+        ingredients.items(), START_INDEX
+    ):
         text = f'{index}. {name} — {amount} {unit}'
-        pdf.drawString(2 * cm, y_position, text)
-        y_position -= 1 * cm
-        if y_position < 2 * cm:
+        pdf.drawString(LEFT_MARGIN, y_position, text)
+        y_position -= LINE_HEIGHT
+        if y_position < BOTTOM_MARGIN:
             pdf.showPage()
-            pdf.setFont('DejaVu', 12)
-            y_position = 27 * cm
+            pdf.setFont(SHOPPING_CART_FONT_NAME, TEXT_FONT_SIZE)
+            y_position = NEW_PAGE_Y_POSITION
     pdf.showPage()
     pdf.save()
     buffer.seek(0)

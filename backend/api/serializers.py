@@ -127,6 +127,13 @@ class RecipeCreateSerializer(BaseRecipeSerializer):
         fields = BaseRecipeSerializer.Meta.fields
         read_only_fields = ('author',)
 
+    def validate_image(self, image):
+        if not image:
+            raise serializers.ValidationError(
+                'Должно присутствовать изображение.'
+            )
+        return image
+
     def validate_tags(self, tags):
         if not tags:
             raise serializers.ValidationError(
@@ -148,7 +155,7 @@ class RecipeCreateSerializer(BaseRecipeSerializer):
             )
         return ingredients
 
-    def get_ingredients(self, recipe, ingredients):
+    def create_ingredients(self, recipe, ingredients):
         RecipeIngredient.objects.bulk_create(
             RecipeIngredient(
                 recipe=recipe,
@@ -166,7 +173,7 @@ class RecipeCreateSerializer(BaseRecipeSerializer):
             author=self.context.get('request').user, **validated_data
         )
         recipe.tags.set(tags)
-        self.get_ingredients(recipe, ingredients)
+        self.create_ingredients(recipe, ingredients)
         return recipe
 
     @transaction.atomic
@@ -187,7 +194,7 @@ class RecipeCreateSerializer(BaseRecipeSerializer):
         instance = super().update(instance, validated_data)
         RecipeIngredient.objects.filter(recipe=instance).delete()
         instance.tags.set(tags)
-        self.get_ingredients(instance, ingredients)
+        self.create_ingredients(instance, ingredients)
         return instance
 
     def to_representation(self, instance):

@@ -1,9 +1,9 @@
 """Views для приложения api."""
 
-from collections import Counter
 from datetime import datetime
 
 from django.conf import settings
+from django.db.models import Sum
 from django.http import FileResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
@@ -37,11 +37,10 @@ def redirect_short_link(request, short_link):
     recipe_id = Hashids(salt=settings.SHORTLINK_SALT, min_length=3).decode(
         short_link
     )
-    if recipe_id:
-        recipe = get_object_or_404(Recipe, id=recipe_id[0])
-        return redirect(f'/recipes/{recipe.id}/')
-    else:
+    if not recipe_id:
         return redirect('/404/')
+    recipe = get_object_or_404(Recipe, id=recipe_id[0])
+    return redirect(f'/recipes/{recipe.id}/')
 
 
 class RecipeManagementViewSet(BaseUserRecipeManagementViewSet):
@@ -147,27 +146,34 @@ class RecipeManagementViewSet(BaseUserRecipeManagementViewSet):
     )
     def download_shopping_cart(self, request):
         user = request.user
-        shopping_cart_recipes = user.shopping_cart.prefetch_related(
-            'recipe_ingredients__ingredient'
+        shopping_cart_recipes = (
+            user.shopping_cart.prefetch_related(
+                'recipe_ingredients__ingredient'
+            )
+            .values(
+                'recipe_ingredients__ingredient__name',
+                'recipe_ingredients__ingredient__measurement_unit',
+            )
+            .annotate(total_amount=Sum('recipe_ingredients__amount'))
         )
-        ingredients = Counter()
-        for recipe in shopping_cart_recipes:
-            for recipe_ingredient in recipe.recipe_ingredients.all():
-                key = (
-                    recipe_ingredient.ingredient.name,
-                    recipe_ingredient.ingredient.measurement_unit,
-                )
-                ingredients[key] += recipe_ingredient.amount
-        if not ingredients:
+        if not shopping_cart_recipes:
             return Response(
                 {'detail': 'Список покупок пуст'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        ingredients = {
+            (
+                item['recipe_ingredients__ingredient__name'],
+                item['recipe_ingredients__ingredient__measurement_unit'],
+            ): item['total_amount']
+            for item in shopping_cart_recipes
+        }
         return FileResponse(
             generate_shopping_list_pdf(ingredients),
             as_attachment=True,
-            filename=f'shopping_list_{user.username}'
-            f'_{datetime.now().strftime("%Y-%m-%d")}.pdf',
+            filename='shopping_list_{}_{}.pdf'.format(
+                user.username, datetime.now().strftime("%Y-%m-%d")
+            ),
         )
 
 

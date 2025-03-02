@@ -3,17 +3,15 @@
 from django.db.models import Case, IntegerField, When
 from django_filters import rest_framework as filters
 
-from recipes.models import Ingredient, Tag
+from recipes.models import Ingredient, Recipe, Tag
+
+HIGH_PRIORITY = 0
+LOW_PRIORITY = 1
 
 
 class RecipeFilter(filters.FilterSet):
     """Фильтры для рецептов."""
 
-    author = filters.CharFilter(
-        field_name='author__id',
-        lookup_expr='exact',
-        label='Автор',
-    )
     tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
@@ -28,6 +26,10 @@ class RecipeFilter(filters.FilterSet):
         method='filter_is_in_shopping_cart',
         label='В списке покупок',
     )
+
+    class Meta:
+        model = Recipe
+        fields = ('author',)
 
     def filter_by_user_related_field(
         self, queryset, name, value, related_field
@@ -67,8 +69,8 @@ class IngredientFilter(filters.FilterSet):
             queryset.filter(name__icontains=value)
             .annotate(
                 priority=Case(
-                    When(name__istartswith=value, then=0),
-                    default=1,
+                    When(name__istartswith=value, then=HIGH_PRIORITY),
+                    default=LOW_PRIORITY,
                     output_field=IntegerField(),
                 )
             )

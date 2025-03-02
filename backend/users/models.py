@@ -19,24 +19,20 @@ class CustomUser(AbstractUser):
         'Email',
         max_length=EMAIL_MAX_LENGTH,
         unique=True,
-        null=False,
     )
     username = models.CharField(
         'Имя пользователя',
         max_length=USERNAME_MAX_LENGTH,
         unique=True,
-        null=False,
         validators=[validate_username],
     )
     first_name = models.CharField(
         'Имя',
         max_length=FIRST_NAME_MAX_LENGTH,
-        null=False,
     )
     last_name = models.CharField(
         'Фамилия',
         max_length=LAST_NAME_MAX_LENGTH,
-        null=False,
     )
     avatar = models.ImageField(
         'Аватар',

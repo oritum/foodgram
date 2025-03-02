@@ -115,7 +115,9 @@ class SubscriptionSerializer(BaseUserSerializer):
             'recipes_limit'
         )
         recipes = (
-            obj.recipes.all()[: int(recipes_limit)]
+            # fmt: off
+            obj.recipes.all()[:int(recipes_limit)]
+            # fmt: on
             if recipes_limit
             else obj.recipes.all()
         )

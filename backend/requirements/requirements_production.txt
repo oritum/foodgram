@@ -12,6 +12,7 @@ Django==3.2.3
 django-filter==21.1
 djangorestframework==3.12.4
 djoser==2.3.1
+drf-extra-fields==3.7.0
 exceptiongroup==1.2.2
 fastapi==0.115.8
 h11==0.14.0

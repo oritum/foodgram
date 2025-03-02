@@ -14,7 +14,6 @@ from recipes.constants import (
     TAG_NAME_MAX_LENGTH,
     TAG_SLUG_MAX_LENGTH,
 )
-from recipes.validators import validate_slug
 
 User = get_user_model()
 
@@ -23,9 +22,7 @@ class Tag(models.Model):
     """Модель тега"""
 
     name = models.CharField('Название', max_length=TAG_NAME_MAX_LENGTH)
-    slug = models.SlugField(
-        'Slug', max_length=TAG_SLUG_MAX_LENGTH, validators=(validate_slug,)
-    )
+    slug = models.SlugField('Slug', max_length=TAG_SLUG_MAX_LENGTH)
 
     class Meta:
         verbose_name = 'Тег'
