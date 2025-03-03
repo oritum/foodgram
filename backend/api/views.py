@@ -40,7 +40,7 @@ def redirect_short_link(request, short_link):
     if not recipe_id:
         return redirect('/404/')
     recipe = get_object_or_404(Recipe, id=recipe_id[0])
-    return redirect(f'/recipes/{recipe.id}/')
+    return redirect(f'/recipes/{recipe.id}')
 
 
 class RecipeManagementViewSet(BaseUserRecipeManagementViewSet):
