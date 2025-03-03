@@ -139,3 +139,4 @@ dmypy.json
 .vscode
 
 /media
+db_dump.dump

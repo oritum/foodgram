@@ -148,3 +148,4 @@ dmypy.json
 
 # Others
 node_modules
+db_dump.dump
