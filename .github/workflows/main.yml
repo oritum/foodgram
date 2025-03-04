@@ -44,7 +44,7 @@ jobs:
 
   build_and_push_to_docker_hub:
     name: Push Docker image to DockerHub
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: tests
     steps:
       - name: Check out the repo
@@ -65,7 +65,7 @@ jobs:
 
   build_frontend_and_push_to_docker_hub:
     name: Push frontend Docker image to DockerHub
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -85,7 +85,7 @@ jobs:
 
   build_gateway_and_push_to_docker_hub:
     name: Push gateway Docker image to DockerHub
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -120,7 +120,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         source: "docker-compose.production.yml"
-        target: "foodgram"
+        target: "apps/foodgram"
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
       with:
@@ -129,7 +129,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          cd foodgram
+          cd apps/foodgram
           sudo docker compose -f docker-compose.production.yml pull
           sudo docker compose -f docker-compose.production.yml down
           sudo docker compose -f docker-compose.production.yml up -d

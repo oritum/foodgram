@@ -34,7 +34,7 @@ services:
     build: ./gateway
     image: foodgram_gateway
     ports:
-      - 8000:80
+      - 9000:80
     depends_on:
       - backend
       - frontend
