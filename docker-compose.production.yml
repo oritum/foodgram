@@ -29,7 +29,7 @@ services:
   gateway:
     image: oritum/foodgram_gateway:latest
     ports:
-      - 8000:80
+      - 9000:80
     volumes:
       - static_foodgram:/staticfiles
       - media_foodgram:/media
