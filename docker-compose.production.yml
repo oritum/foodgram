@@ -27,6 +27,7 @@ services:
       - frontend
   gateway:
     image: oritum/foodgram_gateway:latest
+    restart: unless-stopped
     ports:
       - 9000:80
     volumes:
