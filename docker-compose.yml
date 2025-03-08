@@ -10,6 +10,12 @@ services:
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data/
+  frontend:
+    build: ./frontend
+    image: foodgram_frontend
+    command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - static:/frontend_static
   backend:
     build: 
       context: ./backend
@@ -19,17 +25,10 @@ services:
     env_file: .env
     depends_on:
       - db
+      - frontend
     volumes:
       - static:/backend_static
       - media:/media
-  frontend:
-    build: ./frontend
-    image: foodgram_frontend
-    command: cp -r /app/build/. /frontend_static/
-    depends_on:
-      - backend
-    volumes:
-      - static:/frontend_static
   gateway:
     build: ./gateway
     image: foodgram_gateway
@@ -37,7 +36,6 @@ services:
       - 9000:80
     depends_on:
       - backend
-      - frontend
     volumes:
       - static:/staticfiles
       - media:/media

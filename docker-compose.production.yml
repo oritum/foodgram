@@ -10,7 +10,12 @@ services:
     restart: unless-stopped
     volumes:
       - pg_data_foodgram:/var/lib/postgresql/data
-    
+  frontend:
+    image: oritum/foodgram_frontend:latest
+    command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - static_foodgram:/frontend_static
+    depends_on:
   backend:
     image: oritum/foodgram_backend:latest
     env_file: .env
@@ -19,13 +24,7 @@ services:
       - media_foodgram:/media
     depends_on:
       - db
-  frontend:
-    image: oritum/foodgram_frontend:latest
-    command: cp -r /app/build/. /frontend_static/
-    volumes:
-      - static_foodgram:/frontend_static
-    depends_on:
-      - backend
+      - frontend
   gateway:
     image: oritum/foodgram_gateway:latest
     ports:
@@ -35,4 +34,4 @@ services:
       - media_foodgram:/media
     depends_on:
       - backend
-      - frontend
+
