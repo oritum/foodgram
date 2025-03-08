@@ -18,6 +18,7 @@ services:
   backend:
     image: oritum/foodgram_backend:latest
     env_file: .env
+    restart: unless-stopped
     volumes:
       - static_foodgram:/backend_static
       - media_foodgram:/media
