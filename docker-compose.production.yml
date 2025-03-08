@@ -15,7 +15,6 @@ services:
     command: cp -r /app/build/. /frontend_static/
     volumes:
       - static_foodgram:/frontend_static
-    depends_on:
   backend:
     image: oritum/foodgram_backend:latest
     env_file: .env
