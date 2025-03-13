@@ -110,6 +110,7 @@ jobs:
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
           sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+  
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
@@ -120,7 +121,11 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
+          Workflow: `${{ github.workflow }}`
+          Branch: `${{ github.ref_name }}`
+
           `${{ github.actor }}` created commit:
           Commit message: `${{ github.event.commits[0].message }}`
+          
           `${{ github.repository }}` deploy completed successfully.
         format: markdown
